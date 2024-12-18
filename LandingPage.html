@@ -7,22 +7,57 @@
     <link rel="stylesheet" href="LandingPageStyles.css">
 </head>
 <body>
-    <div class="container" style="background-color: rgb(176, 156, 194);">
+    
+    <div id="profile-container">
+        <div id="avatar"></div>
+        <div id="details-popup">
+            <p class="profile-details" id="username-detail"></p>
+            <p class="profile-details" id="email-detail"></p>
+        </div>
+
+        <script>
+           
+            const userString = localStorage.getItem("users");
+        
+            if (userString) {
+              
+                const userObject = JSON.parse(userString);
+                
+                const username = userObject.username || "Raunak";
+                const email = userObject.email || "raunakumar.27@gmail.com";
+        
+                const avatar = document.getElementById("avatar");
+                avatar.textContent = username.charAt(0).toUpperCase();
+        
+               
+                document.getElementById("username-detail").textContent = `Username: ${username}`;
+                document.getElementById("email-detail").textContent = `Email: ${email}`;
+            } else {
+              
+                console.log("No user data found in localStorage.");
+        
+            
+                const avatar = document.getElementById("avatar");
+                avatar.textContent = "G"; 
+        
+                document.getElementById("username-detail").textContent = "Username: Guest";
+                document.getElementById("email-detail").textContent = "Email: Not logged in";
+            }
+        </script>
+        
+        
+    </div>
         <h1>Study Management System</h1>
         <form id="study-form">
             <label for="subject">Subject:</label>
             <input type="text" id="subject" placeholder="Enter subject name" required>
-
             <label for="hours">Hours Studied:</label>
             <input type="number" id="hours" placeholder="Enter hours studied" min="0" max="24" required>
-
             <label for="total-hours">Total Hours Allotted:</label>
             <input type="number" id="total-hours" placeholder="Enter total hours" min="1" required>
-
             <button type="submit">Add Progress</button><br>
             <button type="button" id="reset-button">Reset All</button> 
         </form>
-
         <div id="results">
             <h2>Study Progress</h2>
             <table>
