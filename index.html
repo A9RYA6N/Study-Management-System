@@ -3,26 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Manager</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Study Management System</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="heading">
-        <h1>Study Manager</h1>
+    <!-- Auth Forms -->
+    <div id="authForms" class="auth-container">
+        <div class="auth-box">
+            <h2 id="authTitle">Sign in to your account</h2>
+            
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+                <p class="text-center">
+                    Don't have an account? 
+                    <button type="button" class="btn-link" id="showSignup">Sign up</button>
+                </p>
+            </form>
+
+            <form id="signupForm" class="auth-form hidden">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="institutionType">Institution Type</label>
+                    <select id="institutionType">
+                        <option value="school">School</option>
+                        <option value="college">College</option>
+                        <option value="university">University</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="institutionName">Institution Name</label>
+                    <input type="text" id="institutionName" required>
+                </div>
+                <div class="form-group">
+                    <label for="className">Class/Year</label>
+                    <input type="text" id="className" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+                <p class="text-center">
+                    Already have an account? 
+                    <button type="button" class="btn-link" id="showLogin">Sign in</button>
+                </p>
+            </form>
+        </div>
     </div>
-    <div id="inputs">
-        <label for="subjects">Subjects</label>
-        <select name="subjects" id="subjects">
-            <option value="">Choose a subject</option>
-        </select>
-        <input type="text" id="entersubject" placeholder="Add subject">
-        <input type="number" id="hours" placeholder="Enter the number of hours">
-        <button id="submit" onclick="submitbtn()">Submit</button>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <header class="header">
+            <div class="header-content">
+                <h1>Study Management System</h1>
+                <div class="profile-section">
+                    <div id="profileInfo" class="profile-info">
+                        <img id="profileAvatar" class="avatar" alt="Profile">
+                        <div class="profile-details">
+                            <span id="profileName"></span>
+                            <span id="profileInstitution" class="institution"></span>
+                        </div>
+                    </div>
+                    <button id="signOutBtn" class="btn-secondary">Sign Out</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <form id="subjectForm" class="subject-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="subjectName">Subject Name</label>
+                        <input type="text" id="subjectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalHours">Total Hours</label>
+                        <input type="number" id="totalHours" min="1" max="1000" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Subject</button>
+                </div>
+            </form>
+
+            <div id="subjectList" class="subject-grid"></div>
+        </main>
     </div>
-    <div id="outputs">
-        <div id="spenthrs"></div>
-        <div id="remaininghrs"></div>
+
+    <!-- Profile Editor Modal -->
+    <div id="profileEditor" class="modal hidden">
+        <div class="modal-content">
+            <h2>Edit Profile</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="editInstitutionType">Institution Type</label>
+                    <select id="editInstitutionType">
+                        <option value="school">School</option>
+                        <option value="college">College</option>
+                        <option value="university">University</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editInstitutionName">Institution Name</label>
+                    <input type="text" id="editInstitutionName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editClassName">Class/Year</label>
+                    <input type="text" id="editClassName" required>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn-secondary" id="cancelProfileEdit">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <script src="script.js"></script>
+
+    <script src="app.js"></script>
 </body>
 </html>
