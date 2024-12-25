@@ -1,26 +1,67 @@
-//add js for f// Storage utilities
 const USERS_KEY = 'study_management_users';
 const SUBJECTS_KEY = 'study_management_subjects';
 const CURRENT_USER_KEY = 'study_management_current_user';
+const LAST_USER_ID_KEY = 'study_management_last_user_id';
+const LAST_SUBJECT_ID_KEY = 'study_management_last_subject_id';
+
+function getLastUserId() {
+    return parseInt(localStorage.getItem(LAST_USER_ID_KEY) || '0');
+}
+
+function incrementUserId() {
+    const lastId = getLastUserId();
+    const newId = lastId + 1;
+    localStorage.setItem(LAST_USER_ID_KEY, newId.toString());
+    return newId;
+}
+
+function getLastSubjectId(userId) {
+    const key = `${LAST_SUBJECT_ID_KEY}_${userId}`;
+    return parseInt(localStorage.getItem(key) || '0');
+}
+
+function incrementSubjectId(userId) {
+    const key = `${LAST_SUBJECT_ID_KEY}_${userId}`;
+    const lastId = getLastSubjectId(userId);
+    const newId = lastId + 1;
+    localStorage.setItem(key, newId.toString());
+    return newId;
+}
 
 function getUsers() {
-    return JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+    return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
 }
 
 function saveUser(user) {
     const users = getUsers();
-    users[user.id] = user;
+    const existingUserIndex = users.findIndex(u => u.id === user.id);
+    
+    if (existingUserIndex !== -1) {
+        users[existingUserIndex] = user;
+    } else {
+        users.push(user);
+    }
+    
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
 function getCurrentUser() {
-    const id = localStorage.getItem(CURRENT_USER_KEY);
-    return id ? getUsers()[id] : null;
+    const sessionData = localStorage.getItem(CURRENT_USER_KEY);
+    if (!sessionData) return null;
+    
+    const sessionUser = JSON.parse(sessionData);
+    const users = getUsers();
+    return users.find(u => u.id === sessionUser.id) || null;
 }
 
-function setCurrentUser(id) {
-    if (id) {
-        localStorage.setItem(CURRENT_USER_KEY, id);
+function setCurrentUser(user) {
+    if (user) {
+        const sessionData = {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        };
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(sessionData));
     } else {
         localStorage.removeItem(CURRENT_USER_KEY);
     }
@@ -37,7 +78,6 @@ function saveSubjects(userId, subjects) {
     localStorage.setItem(SUBJECTS_KEY, JSON.stringify(allSubjects));
 }
 
-// Date utilities
 function getCurrentWeek() {
     const now = new Date();
     const onejan = new Date(now.getFullYear(), 0, 1);
@@ -50,7 +90,6 @@ function getCurrentMonth() {
     return `${now.getFullYear()}-${now.getMonth() + 1}`;
 }
 
-// UI utilities
 function showElement(id) {
     document.getElementById(id).classList.remove('hidden');
 }
@@ -59,27 +98,51 @@ function hideElement(id) {
     document.getElementById(id).classList.add('hidden');
 }
 
-// Auth handling
 function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
     const users = getUsers();
-    const user = Object.values(users).find(u => u.email === email);
+    const user = users.find(u => u.email === email);
     
     if (user) {
-        setCurrentUser(user.id);
-        initializeApp();
+        if(user.password === password)
+            {
+                setCurrentUser(user);
+                document.getElementById('loginForm').reset();
+                initializeApp();
+            }
+        else{
+            alert("Incorrect password")
+        }
     } else {
-        alert('Invalid email or password');
+        alert('Invalid email');
     }
 }
 
 function handleSignup(e) {
     e.preventDefault();
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+
+    const users = getUsers();
+    const existingUser = users.find(u => u.email === email);
+
+    if (existingUser) {
+        alert('An account with this email already exists. Please login instead.');
+        hideElement('signupForm');
+        showElement('loginForm');
+        document.getElementById('authTitle').textContent = 'Sign in to your account';
+        document.getElementById('loginEmail').value = email;
+        return;
+    }
+
     const newUser = {
-        id: crypto.randomUUID(),
-        name: document.getElementById('signupName').value,
-        email: document.getElementById('signupEmail').value,
+        id: parseInt(incrementUserId()),
+        name: document.getElementById('signupName').value.trim(),
+        email,
+        password,
         avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(document.getElementById('signupName').value)}`,
         institution: {
             type: document.getElementById('institutionType').value,
@@ -89,7 +152,8 @@ function handleSignup(e) {
     };
 
     saveUser(newUser);
-    setCurrentUser(newUser.id);
+    setCurrentUser(newUser);
+    document.getElementById("signupForm").reset();
     initializeApp();
 }
 
@@ -101,22 +165,32 @@ function handleAddSubject(e) {
     const user = getCurrentUser();
     const subjects = getSubjects(user.id);
 
+    if (totalHours>24) {
+        alert('Total hours must be between 0 and 24');
+        return;
+    }
+
     const existingSubject = subjects.find(s => s.name.toLowerCase() === name.toLowerCase());
     
     if (existingSubject) {
-        existingSubject.totalHours += totalHours;
+        const newTotal = existingSubject.totalHours + totalHours;
+        if (newTotal > 24||newTotal<=0) {
+            alert('Total hours cannot exceed 24 or be below 0 hours per subject');
+            return;
+        }
+        existingSubject.totalHours = newTotal;
         saveSubjects(user.id, subjects);
     } else {
         const newSubject = {
-            id: crypto.randomUUID(),
-            name,
+            id:incrementSubjectId(user.id),
+            name:name.trim(),
             totalHours,
-            coveredHours: 0,
+            coveredHours:0,
             weeklyProgress: {},
             monthlyProgress: {}
         };
         subjects.push(newSubject);
-        saveSubjects(user.id, subjects);
+        saveSubjects(parseInt(user.id), subjects);
     }
 
     document.getElementById('subjectForm').reset();
@@ -129,9 +203,14 @@ function handleUpdateHours(subjectId, hours) {
     const currentWeek = getCurrentWeek();
     const currentMonth = getCurrentMonth();
 
-    const subject = subjects.find(s => s.id === subjectId);
+    const subject = subjects.find(s => s.id === parseInt(subjectId));
     if (subject) {
         const newCoveredHours = Math.min(subject.totalHours, subject.coveredHours + hours);
+        if(newCoveredHours<0)
+        {
+            alert('Total hours cannot be below 0 hours per subject');
+            return;
+        }
         subject.coveredHours = newCoveredHours;
         subject.weeklyProgress[currentWeek] = (subject.weeklyProgress[currentWeek] || 0) + hours;
         subject.monthlyProgress[currentMonth] = (subject.monthlyProgress[currentMonth] || 0) + hours;
@@ -140,6 +219,18 @@ function handleUpdateHours(subjectId, hours) {
         renderSubjects();
     }
 }
+
+function handleRemoveSubject(subjectId){
+    if (confirm('Are you sure you want to remove this subject? This action cannot be undone.')) {
+      const user = getCurrentUser();
+      if (!user) return;
+      
+      const subjects = getSubjects(user.id);
+      const updatedSubjects = subjects.filter(s => s.id !== subjectId);
+      saveSubjects(user.id, updatedSubjects);
+      renderSubjects();
+    }
+  }
 
 // Profile handling
 function handleProfileEdit(e) {
@@ -174,7 +265,9 @@ function renderSubjects() {
         return `
             <div class="subject-card">
                 <div class="subject-header">
-                    <h3>${subject.name}</h3>
+                    <div class="subject-title">
+                        <h3>${subject.name}</h3>
+                    </div>
                     <span>${subject.coveredHours}/${subject.totalHours}h</span>
                 </div>
 
@@ -209,9 +302,12 @@ function renderSubjects() {
                 </div>
 
                 <div class="form-group">
-                    <label>Add study hours</label>
-                    <input type="number" min="0" max="24" class="study-hours-input"
+                    <label>Add/Remove study hours</label>
+                    <input type="number" min="-24" max="24" class="study-hours-input"
                            onchange="handleUpdateHours('${subject.id}', Number(this.value))">
+                        <button type="button" class="delete-btn" 
+                                onclick="handleRemoveSubject(${subject.id})" 
+                                title="Remove subject">Remove Subject</button>
                 </div>
             </div>
         `;
@@ -283,5 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('signOutBtn').addEventListener('click', () => {
         setCurrentUser(null);
         initializeAuth();
+        showElement('loginForm');
     });
-});unctionality
+});
