@@ -50,10 +50,8 @@ The Study Management System is a web application designed to help students track
 - **Storage:** LocalStorage or Session Storage for persisting study progress data
 
 ### Deployment
-- Deployment Platforms:
-  - [GitHub Pages](https://pages.github.com/)
+- Deployment Platform:
   - [Netlify](https://www.netlify.com/)
-  - [Docker](https://www.docker.com/)
 
 ## Installation
 
