@@ -1,9 +1,7 @@
-// Main application logic
 const App = {
     tasks: [],
 
     init() {
-        // Load tasks from local storage on initialization
         this.tasks = Storage.load();
         this.setupEventListeners();
         this.startTimeUpdate();
@@ -30,7 +28,6 @@ const App = {
     handleAddTask(e) {
         e.preventDefault();
 
-        // Get task details from the form
         const task = {
             id: Date.now().toString(),
             subject: document.getElementById('subject').value,
@@ -43,26 +40,21 @@ const App = {
             return;
         }
 
-        // Add the new task to the tasks array
         this.tasks.push(task);
 
-        // Save tasks to local storage
         Storage.save(this.tasks);
 
-        // Update the schedule grid and close the modal
         UI.renderSchedule(this.tasks);
         UI.hideModal();
     },
 
     deleteTask(taskId) {
-        // Remove the task from the array by its ID
         this.tasks = this.tasks.filter(task => task.id !== taskId);
         Storage.save(this.tasks);
         UI.renderSchedule(this.tasks);
     }
 };
 
-// Notification handling
 const Notifications = {
     async requestPermission() {
         if ('Notification' in window) {
@@ -92,7 +84,6 @@ const Notifications = {
     }
 };
 
-// Storage handling
 const Storage = {
     save(tasks) {
         localStorage.setItem('studyTasks', JSON.stringify(tasks));
@@ -104,7 +95,6 @@ const Storage = {
     }
 };
 
-// UI handling
 const UI = {
     updateTime() {
         const timeElement = document.getElementById('current-time');
@@ -154,5 +144,4 @@ const UI = {
     }
 };
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', () => App.init());
