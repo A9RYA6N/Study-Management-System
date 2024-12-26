@@ -51,7 +51,7 @@ The Study Management System is a web application designed to help students track
 
 ### Deployment
 - Deployment Platform:
-  - [Netlify](https://www.netlify.com/)
+  - [Netlify]((https://studyms.netlify.app/))
 
 ## Installation
 
