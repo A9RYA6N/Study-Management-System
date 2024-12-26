@@ -157,7 +157,6 @@ function handleSignup(e) {
     initializeApp();
 }
 
-// Subject handling
 function handleAddSubject(e) {
     e.preventDefault();
     const name = document.getElementById('subjectName').value;
@@ -232,7 +231,6 @@ function handleRemoveSubject(subjectId){
     }
   }
 
-// Profile handling
 function handleProfileEdit(e) {
     e.preventDefault();
     const user = getCurrentUser();
@@ -244,10 +242,9 @@ function handleProfileEdit(e) {
     
     saveUser(user);
     hideElement('profileEditor');
-    updateProfileDisplay();
+   updateProfileDisplay();
 }
 
-// Rendering
 function renderSubjects() {
     const user = getCurrentUser();
     const subjects = getSubjects(user.id);
@@ -320,24 +317,19 @@ function setupProfileHandlers() {
     const profileInfo = document.getElementById('profileInfo');
     const profileEditor = document.getElementById('profileEditor');
 
-    // Handle avatar click for dropdown menu
     avatar.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent event from bubbling to profileInfo
+        e.stopPropagation();
         dropdownMenu.classList.toggle('hidden');
-        // Always hide profile editor when showing dropdown
         profileEditor.classList.add('hidden');
     });
 
-    // Handle profile info click for profile editor
     profileInfo.addEventListener('click', (e) => {
-        // Only show profile editor if click didn't come from avatar
         if (e.target !== avatar && !avatar.contains(e.target)) {
             profileEditor.classList.remove('hidden');
-            dropdownMenu.classList.add('hidden'); // Hide dropdown when showing editor
+            dropdownMenu.classList.add('hidden');
         }
     });
 
-    // Hide dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!dropdownMenu.contains(e.target) && e.target !== avatar) {
             dropdownMenu.classList.add('hidden');
@@ -347,7 +339,6 @@ function setupProfileHandlers() {
         }
     });
 
-    // Handle profile edit cancel
     document.getElementById('cancelProfileEdit').addEventListener('click', () => {
         hideElement('profileEditor');
     });
@@ -360,7 +351,6 @@ function updateProfileDisplay() {
     document.getElementById('profileAvatar').src = user.avatar;
 }
 
-// Initialization
 function initializeApp() {
     hideElement('authForms');
     showElement('app');
@@ -373,7 +363,6 @@ function initializeAuth() {
     showElement('authForms');
 }
 
-// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     const currentUser = getCurrentUser();
     if (currentUser) {
@@ -382,7 +371,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeAuth();
     }
 
-    // Auth form switching
     document.getElementById('showSignup').addEventListener('click', () => {
         hideElement('loginForm');
         showElement('signupForm');
@@ -395,14 +383,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('authTitle').textContent = 'Sign in to your account';
     });
 
-    // Form submissions
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
     document.getElementById('signupForm').addEventListener('submit', handleSignup);
     document.getElementById('subjectForm').addEventListener('submit', handleAddSubject);
     document.getElementById('profileForm').addEventListener('submit', handleProfileEdit);
 
-    // Profile editing
-    document.getElementById('profileInfo').addEventListener('click', () => {
+    document.getElementById('btn-profile').addEventListener('click', () => {
         const user = getCurrentUser();
         document.getElementById('editInstitutionType').value = user.institution.type;
         document.getElementById('editInstitutionName').value = user.institution.name;
@@ -414,27 +400,22 @@ document.addEventListener('DOMContentLoaded', () => {
         hideElement('profileEditor');
     });
 
-    // Sign out
     document.getElementById('signOutBtn').addEventListener('click', () => {
         setCurrentUser(null);
         initializeAuth();
         showElement('loginForm');
     });
 });
+
 const avatar = document.getElementById('profileAvatar');
 const dropdownMenu = document.getElementById('dropdownMenu');
 
 avatar.addEventListener('click', () => {
-    // Toggle visibility of the dropdown menu
     dropdownMenu.classList.toggle('hidden');
 });
 
-// Hide dropdown if clicked outside
 document.addEventListener('click', (event) => {
     if (!dropdownMenu.contains(event.target) && event.target !== avatar) {
         dropdownMenu.classList.add('hidden');
     }
 });
-
-
-
