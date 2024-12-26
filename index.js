@@ -311,39 +311,6 @@ function renderSubjects() {
     }).join('');
 }
 
-function setupProfileHandlers() {
-    const avatar = document.getElementById('profileAvatar');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    const profileInfo = document.getElementById('profileInfo');
-    const profileEditor = document.getElementById('profileEditor');
-
-    avatar.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdownMenu.classList.toggle('hidden');
-        profileEditor.classList.add('hidden');
-    });
-
-    profileInfo.addEventListener('click', (e) => {
-        if (e.target !== avatar && !avatar.contains(e.target)) {
-            profileEditor.classList.remove('hidden');
-            dropdownMenu.classList.add('hidden');
-        }
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!dropdownMenu.contains(e.target) && e.target !== avatar) {
-            dropdownMenu.classList.add('hidden');
-        }
-        if (!profileEditor.contains(e.target) && !profileInfo.contains(e.target)) {
-            profileEditor.classList.add('hidden');
-        }
-    });
-
-    document.getElementById('cancelProfileEdit').addEventListener('click', () => {
-        hideElement('profileEditor');
-    });
-}
-
 function updateProfileDisplay() {
     const user = getCurrentUser();
     document.getElementById('profileName').textContent = user.name;
