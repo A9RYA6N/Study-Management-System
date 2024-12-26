@@ -63,7 +63,7 @@ function setCurrentUser(user) {
         };
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(sessionData));
     } else {
-        localStorage.removeItem(CURRENT_USER_KEY);
+        localStorage.setItem(CURRENT_USER_KEY,null);
     }
 }
 
