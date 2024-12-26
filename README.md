@@ -6,7 +6,7 @@
 ### Purpose
 The Study Management System is a web application designed to help students track and log their study progress across various subjects. It allows students to input the hours studied for a subject on a daily basis and provides estimates of the remaining hours required for each subject, based on user-defined allotments.
 
-## Functional Requirements
+## Features
 
 ### User Interface
 - A clean and simple user interface with input fields for entering:
